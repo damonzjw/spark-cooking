@@ -28,9 +28,6 @@ object JoinDemo {
       (100, "Contributor"))
       .toDF("id", "status")
 
-    person.createOrReplaceTempView("person")
-    graduateProgram.createOrReplaceTempView("graduateProgram")
-    sparkStatus.createOrReplaceTempView("sparkStatus")
 
     // Inner Join
     val joinExpression: Column = person.col("graduate_program") === graduateProgram.col("id")
