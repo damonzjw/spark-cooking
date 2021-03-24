@@ -1,4 +1,4 @@
-package util
+package org.tianluo.com.util
 
 import com.typesafe.config.{Config, ConfigException, ConfigFactory}
 

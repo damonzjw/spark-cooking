@@ -26,39 +26,20 @@ object OverDemo {
   def aggFunction(): Unit = {
     import spark.implicits._
 
-    /*  累加前3天
-    *
-    *   over(partition by id order by date rows between 3 and current row)
-    * */
-    val window_3 = Window.partitionBy('id).orderBy('date).rowsBetween(-3, 0)
-
-    /*  累加前3天，后5天
-    *
-    *   over(partition by id order by date rows between 3 and 5)
-    * */
-    val window_3_5 = Window.partitionBy('id).orderBy('date).rowsBetween(-3, 5)
-
-
-    /*  累加昨日、今日、明日
-    *
-    *   over(partition by id order by date rows between -1 and 1)
-    * */
-    val window_1_1 = Window.partitionBy('id).orderBy('date).rowsBetween(-1, 1)
-
-    /*  累加分区内所有行
-    *
-    *   over(partition by id order by date rows between unbounded preceding and unbounded following)
-    * */
-    val windowAll = Window.partitionBy('id).orderBy('date).rowsBetween(Long.MinValue, Long.MaxValue)
 
     /*  分区总和
     *
     *   over(partition by id )
     * */
     val windowPartition = Window.partitionBy('id)
+
+
     /*  累计求和
     *
+    *   over(partition by id order by date)
     * */
+    val windowAcc = Window.partitionBy('id).orderBy('date)
+
 
     val list_data = List(
       NumData(1, 2, "2020-01-01"),
@@ -76,14 +57,16 @@ object OverDemo {
     )
 
     val ds: Dataset[NumData] = spark.createDataset(list_data)
-    ds.select(
-      'id,
-      'date,
-      'num,
-      sum('num).over().as("total_num"),
-      sum('num).over(windowPartition).as("partition_total_num"),
-      sum('num).over(Window.partitionBy('id).orderBy('date)).as("partition_order_total_num")
-    ).orderBy('id, 'date).show()
+    val sumData = ds
+      .select(
+        'id,
+        'date,
+        'num,
+        sum('num).over().as("total_num"),
+        sum('num).over(windowPartition).as("partition_total_num"),
+        sum('num).over(windowAcc).as("partition_order_total_num"))
+      .orderBy('id, 'date)
+    sumData.show()
   }
 
   /*
