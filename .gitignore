@@ -2,3 +2,4 @@
 /spark-cooking.iml
 /target/
 /spark-warehouse/
+/dependency-reduced-pom.xml
